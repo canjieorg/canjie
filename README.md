@@ -68,37 +68,37 @@
 ### 项目结构
 
 ```bash
-astro.config.mjs
-package.json
-src/
-components/
-  BlogArchive.astro
-  CategoryList.astro
-  ExternalLinkRedirect.astro
-  Footer.astro
-  Head.astro
-  HomePage.astro
-  MarkdownContent.astro
-  Page.astro
-  PageTitle.astro
-  ThemeSelect.astro
-content/
-docs/
-blog/
-categories/
-index.mdx
-404.mdx
-archives.mdx
-index.mdx
-link.mdx
-page/
-  index.mdx
-pages/
-api/
-  redirect.js
-scripts/
-  generate-pagination.js
-content.config.ts
+- astro.config.mjs
+- package.json
+- src/
+  - components/
+    - BlogArchive.astro
+    - CategoryList.astro
+    - ExternalLinkRedirect.astro
+    - Footer.astro
+    - Head.astro
+    - HomePage.astro
+    - MarkdownContent.astro
+    - Page.astro
+    - PageTitle.astro
+    - ThemeSelect.astro
+- content/
+  - docs/
+    - blog/
+      - categories/
+        - index.mdx
+        - 404.mdx
+        - archives.mdx
+        - index.mdx
+        - link.mdx
+      - page/
+        - index.mdx
+  - pages/
+    - api/
+      - redirect.js
+    - scripts/
+      - generate-pagination.js
+- content.config.ts
 ```
 
 ## 功能特性
@@ -147,7 +147,7 @@ content.config.ts
 
 ### Cloudflare
 
-1. Fork 本项目：[canjie](https://github.com/canjieorg/canjie)  
+1. [Fork 本项目](https://github.com/canjieorg/canjie)
 2. 登录 [Cloudflare Pages](https://dash.cloudflare.com/)，点击 **Import an existing Git repository**  
 3. Connect GitHub，选择刚刚 Fork 的项目  
 4. 设置构建参数：
@@ -188,7 +188,7 @@ content.config.ts
 拉取镜像进入目录安装依赖：
 
 ```bash
-npm create astro@latest -- --template tgimgcdn/blog blog && cd blog && npm install
+npm create astro@latest -- --template canjieorg/canjie blog && cd blog && npm install
 ```
 
 启动本地开发服务器：
@@ -208,7 +208,7 @@ npm run build
 拉取镜像进入目录安装依赖：
 
 ```bash
-pnpm create astro@latest -- --template tgimgcdn/blog blog && cd blog && pnpm install
+pnpm create astro@latest -- --template canjieorg/canjie blog && cd blog && pnpm install
 ```
 
 启动本地开发服务器：
@@ -228,7 +228,7 @@ pnpm build
 拉取镜像进入目录安装依赖：
 
 ```bash
-yarn create astro --template tgimgcdn/blog blog && cd blog && yarn install
+yarn create astro --template canjieorg/canjie blog && cd blog && yarn install
 ```
 
 启动本地开发服务器：
