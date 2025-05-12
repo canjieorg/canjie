@@ -99,6 +99,7 @@ api/
 scripts/
   generate-pagination.js
 content.config.ts
+```
 
 ## 功能特性
 
