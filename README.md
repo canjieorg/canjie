@@ -65,41 +65,40 @@
 **Desktop**  
 ![Desktop PSI](https://cdn.canjie.org/PageSpeed-Insights-2025-05-08_04_44_PM.jpg)  
 
-## 项目结构
+### 项目结构
 
-\`\`\`bash
-- astro.config.mjs
-- package.json
-- src/
-  - components/
-    - BlogArchive.astro
-    - CategoryList.astro
-    - ExternalLinkRedirect.astro
-    - Footer.astro
-    - Head.astro
-    - HomePage.astro
-    - MarkdownContent.astro
-    - Page.astro
-    - PageTitle.astro
-    - ThemeSelect.astro
-  - content/
-    - docs/
-      - blog/
-      - categories/
-        - index.mdx
-      - 404.mdx
-      - archives.mdx
-      - index.mdx
-      - link.mdx
-      - page/
-        - index.mdx
-  - pages/
-    - api/
-      - redirect.js
-  - scripts/
-    - generate-pagination.js
-  - content.config.ts
-\`\`\`
+```bash
+astro.config.mjs
+package.json
+src/
+components/
+  BlogArchive.astro
+  CategoryList.astro
+  ExternalLinkRedirect.astro
+  Footer.astro
+  Head.astro
+  HomePage.astro
+  MarkdownContent.astro
+  Page.astro
+  PageTitle.astro
+  ThemeSelect.astro
+content/
+docs/
+blog/
+categories/
+index.mdx
+404.mdx
+archives.mdx
+index.mdx
+link.mdx
+page/
+  index.mdx
+pages/
+api/
+  redirect.js
+scripts/
+  generate-pagination.js
+content.config.ts
 
 ## 功能特性
 
@@ -183,49 +182,62 @@
 
 ### 自部署
 
-<Tabs>
-  <TabItem label="npm">
-    <div>拉取镜像进入目录安装依赖：</div>
-    ```bash
-    npm create astro@latest -- --template tgimgcdn/blog blog && cd blog && npm install
-    ```
-    <div>启动本地开发服务器：</div>
-    ```bash
-    npm run dev
-    ```
-    <div>构建静态文件：</div>
-    ```bash
-    npm run build
-    ```
-  </TabItem>
+#### 使用 npm
 
-  <TabItem label="pnpm">
-    <div>拉取镜像进入目录安装依赖：</div>
-    ```bash
-    pnpm create astro@latest -- --template tgimgcdn/blog blog && cd blog && pnpm install
-    ```
-    <div>启动本地开发服务器：</div>
-    ```bash
-    pnpm dev
-    ```
-    <div>构建静态文件：</div>
-    ```bash
-    pnpm build
-    ```
-  </TabItem>
+拉取镜像进入目录安装依赖：
 
-  <TabItem label="yarn">
-    <div>拉取镜像进入目录安装依赖：</div>
-    ```bash
-    yarn create astro --template tgimgcdn/blog blog && cd blog && yarn install
-    ```
-    <div>启动本地开发服务器：</div>
-    ```bash
-    yarn dev
-    ```
-    <div>构建静态文件：</div>
-    ```bash
-    yarn build
-    ```
-  </TabItem>
-</Tabs>
+```bash
+npm create astro@latest -- --template tgimgcdn/blog blog && cd blog && npm install
+```
+
+启动本地开发服务器：
+
+```bash
+npm run dev
+```
+
+构建静态文件：
+
+```bash
+npm run build
+```
+
+#### 使用 pnpm
+
+拉取镜像进入目录安装依赖：
+
+```bash
+pnpm create astro@latest -- --template tgimgcdn/blog blog && cd blog && pnpm install
+```
+
+启动本地开发服务器：
+
+```bash
+pnpm dev
+```
+
+构建静态文件：
+
+```bash
+pnpm build
+```
+
+#### 使用 yarn
+
+拉取镜像进入目录安装依赖：
+
+```bash
+yarn create astro --template tgimgcdn/blog blog && cd blog && yarn install
+```
+
+启动本地开发服务器：
+
+```bash
+yarn dev
+```
+
+构建静态文件：
+
+```bash
+yarn build
+```
