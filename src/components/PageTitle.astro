@@ -1,0 +1,7 @@
+---
+import Default from '@astrojs/starlight/components/PageTitle.astro';
+const is404Page = Astro.locals.starlightRoute.id === '404';
+---
+
+{/* 如果是 404 页面，不渲染任何内容 */}
+{!is404Page && <Default><slot /></Default>} 

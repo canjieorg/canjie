@@ -1,0 +1,182 @@
+---
+title: "博客使用-基础篇"
+excerpt: "本文将对基于starlight构建的博客系统基本使用进行介绍。"
+giscus: true
+date: 2025-05-10
+category: tech
+thumbnail: https://cdn.canjie.org/AgADNxgAAkWUEVU.webp
+tags:
+  - "Markdown"
+  - "博客"
+  - "Blog"
+---
+
+import { FileTree, Tabs, TabItem, Aside } from '@astrojs/starlight/components';
+
+## 前期准备
+在使用本个人博客系统之前，您有些准备工作需要做，以下是您需要**修改**的文件，我已经**高亮**标注，同时添加了相关**备注**：
+
+<FileTree>
+- **astro.config.mjs**
+- src/
+  - components/
+    - **Footer.astro**
+  - content/
+    - docs/
+      - **index.mdx**
+</FileTree>
+
+<Tabs>
+<TabItem label="astro.config.mjs">
+```js {4, 8, 10, 13, 28, 30, 32, 36} wrap "canjie.org" "tgimgcdn/blog" "R_kgDOOjxhOw" "DIC_kwDOOjxhO84Cp6EN" "cmssky" "https://img20.360buyimg.com/openfeedback/jfs/t1/297564/4/2943/9987/6816f2f6Ff7a97a86/37decef475f8f719.jpg" "参界说" 
+//astro.config.mjs 
+export default defineConfig({
+	site: 'https://canjie.org',
+//博客系统的URL，是否是外链的判断标准，修改为site: 'https://您的域名',
+...
+starlightGiscus({
+					repo: 'tgimgcdn/blog',
+//GIthub用户名/仓库名，评论系统需要，修改为您的GIthub用户名/仓库名
+					repoId: 'R_kgDOOjxhOw',
+//GIthub仓库ID，修改为您的GIthub仓库ID
+					category: 'General',
+					categoryId: 'DIC_kwDOOjxhO84Cp6EN',
+//讨论类别ID，修改为您的讨论类别ID
+					mapping: 'pathname',
+					strict: '0',
+					reactionsEnabled: '1',
+					emitMetadata: '0',
+					inputPosition: 'bottom',
+					theme: 'preferred_color_scheme',
+					lang: 'zh-CN',
+					loading: 'lazy',
+					crossorigin: 'anonymous'
+				}),
+...
+authors: {
+						cmssky: {
+							name: 'cmssky',
+//作者名称，修改为您的作者名称
+							picture: 'https://img20.360buyimg.com/openfeedback/jfs/t1/297564/4/2943/9987/6816f2f6Ff7a97a86/37decef475f8f719.jpg',
+//作者头像，修改为您的作者头像
+							url: 'https://canjie.org',
+//作者网站，修改为您的网站
+						},
+...
+title: '参界说',
+//网站标题，修改为您的网站标题
+			components: {
+```
+</TabItem>
+
+<TabItem label="Footer.astro">
+
+```astro {5, 9} wrap "参界说" "2023-01-01"
+---
+//src/components/Footer.astro
+---
+<span class="copyright">©2023 - 2025 By 参界说</span>
+//页脚标题，修改为您自己的页脚标题
+...
+function updateRunDays() {
+        const startDate = new Date('2023-01-01T00:00:00+08:00'); // 使用北京时间
+//用于显示页脚处的网站运行时间，修改为您的网站实际建立时间
+        const now = getBeijingTime();
+```
+</TabItem>
+
+<TabItem label="index.mdx">
+
+```md {6} wrap "分享技术，记录生活!"
+---
+//src/content/docs/index.mdx
+---
+---
+title: 分享技术，记录生活!
+//首页显示的文字，修改为您希望展示的文字
+description: 欢迎来到我的博客
+template: splash
+```
+</TabItem>
+</Tabs>
+
+评论系统相关参数的修改，可以参考[博客使用-设置评论系统](https://canjie.org/blog/tech/blog-usage---set-up-comment-system/)
+
+## 编写博客
+博客文章位于blog目录，您可以将您编写的mdx或者md文件上传到这个目录
+
+如果需要创建分类，也是在blog目录下创建新的文件夹，比如我就在blog目录下面创建了一个tech的文件夹，所有的技术类的文章都放置在这个文件夹里面
+<FileTree>
+- src/
+  - content/
+    - docs/
+      - **blog/**
+        - tech/
+</FileTree>
+### 温馨提示
+<Aside type="tip">如果您创建了分类，那么您需要同步在categories文件夹下面创建跟您分类名一致的mdx文件，比如您创建了一个tech的分类，那么就要在categories文件夹下面创建一个tech.mdx</Aside>
+<FileTree>
+- src/
+  - content/
+    - docs/
+      - blog/
+        - tech/
+      - **categories/**
+        - index.mdx
+        - **tech.mdx**
+</FileTree>
+
+tech.mdx内容如下，如果您创建的其它分类，相应修改内容即可，需要修改的地方我都标注好了。
+```md "技术" "tech"
+//src/content/docs/categories/tech.mdx
+---
+title: 技术文章
+description: 查看所有技术相关文章
+template: splash
+---
+
+import CategoryList from '../../../components/CategoryList.astro';
+
+<CategoryList category="tech" /> 
+```
+如果上述工作您都准备好了，那么恭喜您，您可以开始编写您的第一篇博客文章了，比如您创建了一个life的分类，那么您可以在该文件夹里面创建一个mdx文件，例如My-first-blog.mdx（实际上您完全可以使用My first blog.mdx），作为您的第一篇博客文章。
+<FileTree>
+- src/
+  - content/
+    - docs/
+      - blog/
+        - **life/**
+          - **My-first-blog.mdx**
+      - categories/
+        - index.mdx
+        - **life.mdx**
+</FileTree>
+My-first-blog.mdx的内容如下,必填的选项我都已经**高亮**标注，同时添加了相关**备注**：
+```md {4, 6, 8, 10, 12, 14, 16, 20, 24} wrap "title: " "date: "
+//src/content/docs/blog/life/My-first-blog.mdx
+---
+title: "我的第一篇博客"                                       
+//必填项，博客标题
+excerpt: "这是我的第一篇博客，欢迎您的到来！"                   
+//选填项，博客摘录，介绍博客的大致内容，支持基本的 Markdown 格式，不需要可以删除该行
+giscus: true                                                 
+//选填项，开启评论，默认所有页面关闭评论，如需开启评论需保留，不需要可以删除该行
+date: 2025-05-09                                             
+//必填项，博客发布日期
+lastUpdated: 2025-05-10                                      
+//选填项，博客更新日期，如无更新日期可以删除该行
+category: life                                               
+//选填项，博客分类，如果博客在/src/content/docs/blog文件夹里面，在此处设定博客分类会将博客自动归到life分类，如果博客在/src/content/docs/blog/life文件夹里面，会自动归为life分类
+thumbnail: https://cdn.canjie.org/AgAD4BgAAmga2VQ.webp       
+//选填项，缩略图，可以为url，也可以为图片地址，如果为图片地址的话将文件置于/public文件夹下面，比如文件位于/public/images里面，则此处填写/public/images/My first blog.jpg 其中My first blog为图片名称，需更改为真实的图片名称，如果不填写此项，默认使用/public文件夹下面的social-card.webp文件
+tags:                                                        
+  - "博客"
+  - "Blog"
+//选填项，标签，每行一个
+---
+这是我的第一篇博客，欢迎您的到来！                              
+This is my first blog, welcome!
+//博客正文
+```
+
+

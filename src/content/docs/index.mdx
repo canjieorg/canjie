@@ -1,0 +1,29 @@
+---
+title: 分享技术，记录生活!
+description: 欢迎来到我的博客
+template: splash
+head:
+  - tag: script
+    attrs:
+      type: text/javascript
+    content: |
+      document.addEventListener('DOMContentLoaded', function() {
+        // 查找页面上的所有标题元素
+        const titleElements = document.querySelectorAll('.content-title, .page-title, h1');
+        // 遍历并应用居中样式
+        titleElements.forEach(function(el) {
+          el.style.textAlign = 'center';
+          el.style.width = '100%';
+          el.style.display = 'block';
+          // 如果标题在容器中，也调整容器样式
+          if (el.parentElement) {
+            el.parentElement.style.textAlign = 'center';
+            el.parentElement.style.width = '100%';
+          }
+        });
+      });
+---
+
+import HomePage from '../../components/HomePage.astro';
+
+<HomePage pageNum={1} />

@@ -1,0 +1,180 @@
+---
+// 获取所有博客文章
+const { posts } = Astro.locals.starlightBlog;
+
+// 按日期排序（从新到旧）
+const sortedPosts = [...posts].sort((a, b) => {
+  return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+});
+
+// 按年份和月份分组
+const postsByYearAndMonth: Record<string, Record<string, any[]>> = {};
+
+for (const post of sortedPosts) {
+  const date = new Date(post.createdAt);
+  const year = date.getFullYear().toString();
+  const month = (date.getMonth() + 1).toString();
+  
+  if (!postsByYearAndMonth[year]) {
+    postsByYearAndMonth[year] = {};
+  }
+  
+  if (!postsByYearAndMonth[year][month]) {
+    postsByYearAndMonth[year][month] = [];
+  }
+  
+  postsByYearAndMonth[year][month].push(post);
+}
+
+// 获取所有年份，从新到旧排序
+const years = Object.keys(postsByYearAndMonth).sort((a, b) => Number(b) - Number(a));
+
+// 格式化日期
+function formatDate(dateString: string) {
+  const date = new Date(dateString);
+  return `${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+}
+---
+
+<div class="archive-page">
+  {years.map(year => {
+    const months = Object.keys(postsByYearAndMonth[year]).sort((a, b) => Number(b) - Number(a));
+    const yearPostsCount = months.reduce((count, month) => count + postsByYearAndMonth[year][month].length, 0);
+    
+    return (
+      <div class="archive-year">
+        <h2>{year}年 ({yearPostsCount}篇文章)</h2>
+        
+        {months.map(month => (
+          <div class="archive-month">
+            <h3>{month}月</h3>
+            <ul>
+              {postsByYearAndMonth[year][month].map(post => (
+                <li>
+                  <div class="post-content">
+                    <div class="post-main">
+                      <span class="archive-date">{formatDate(post.createdAt)}</span>
+                      <a href={post.href} class="post-title">{post.title}</a>
+                    </div>
+                    {post.entry.data.tags && (
+                      <div class="archive-tags">
+                        {Array.isArray(post.entry.data.tags) 
+                          ? post.entry.data.tags.map((tag: string) => (
+                              <a href={`/blog/tags/${tag.toLowerCase()}`} class="tag">#{tag}</a>
+                            ))
+                          : <a href={`/blog/tags/${post.entry.data.tags.toLowerCase()}`} class="tag">#{post.entry.data.tags}</a>
+                        }
+                      </div>
+                    )}
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+    );
+  })}
+</div>
+
+<style>
+.archive-page {
+  font-family: var(--sl-font);
+  max-width: var(--sl-content-width);
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.archive-year {
+  margin-bottom: 2rem;
+}
+
+.archive-month {
+  margin-left: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.post-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.post-main {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.archive-date {
+  font-family: monospace;
+  min-width: 4rem;
+  color: var(--sl-color-text-accent);
+}
+
+.post-title {
+  text-decoration: none;
+  color: var(--sl-color-text);
+  transition: color 0.2s;
+}
+
+.post-title:hover {
+  color: var(--sl-color-accent);
+}
+
+.archive-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-left: 5rem;
+}
+
+.tag {
+  font-size: 0.85rem;
+  color: var(--sl-color-text-accent);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.tag:hover {
+  color: var(--sl-color-accent);
+}
+
+h2 {
+  border-bottom: 1px solid var(--sl-color-gray-5);
+  padding-bottom: 0.5rem;
+  margin-top: 2.5rem;
+  color: var(--sl-color-accent);
+}
+
+h3 {
+  margin-top: 1.5rem;
+  color: var(--sl-color-text-accent);
+}
+
+ul {
+  list-style-type: none;
+  padding-left: 0;
+}
+
+li {
+  margin-bottom: 0.75rem;
+  line-height: 1.5;
+}
+
+@media (max-width: 768px) {
+  .post-main {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .archive-date {
+    min-width: 3.5rem;
+  }
+
+  .archive-tags {
+    margin-left: 0;
+    margin-top: 0.25rem;
+  }
+}
+</style> 

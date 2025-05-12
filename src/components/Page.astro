@@ -1,0 +1,311 @@
+---
+import { Card, CardGrid } from '@astrojs/starlight/components';
+import DefaultPage from '@astrojs/starlight/components/DefaultPage.astro';
+import HomePage from '@astrojs/starlight/components/HomePage.astro';
+import { getEntryBySlug } from '@astrojs/starlight/content';
+import { getImage } from '@astrojs/image';
+
+const { entry } = Astro.props;
+const isHomePage = entry.data.layout === 'home';
+const isBlogPage = entry.data.layout === 'blog';
+
+// 获取所有博客文章并按日期排序
+const blogPosts = await Astro.glob('../../content/blog/**/*.md');
+const sortedPosts = blogPosts
+  .sort((a, b) => new Date(b.frontmatter.date).getTime() - new Date(a.frontmatter.date).getTime())
+  .slice(0, 9); // 只显示前9篇文章
+---
+
+{isHomePage ? (
+  <HomePage entry={entry} />
+) : isBlogPage ? (
+  <DefaultPage entry={entry}>
+    <h2 class="content-title">{entry.data.title}</h2>
+    <CardGrid>
+      {sortedPosts.map((post) => (
+        <Card
+          title={post.frontmatter.title}
+          href={post.url}
+          cta="阅读全文"
+          icon="book"
+        >
+          {post.frontmatter.description}
+        </Card>
+      ))}
+    </CardGrid>
+  </DefaultPage>
+) : (
+  <DefaultPage entry={entry}>
+    <h2 class="content-title">{entry.data.title}</h2>
+    <slot />
+  </DefaultPage>
+)}
+
+<style is:inline>
+  /* 关键 CSS - 内联到 HTML 中 */
+  .content-title {
+    font-size: 2rem;
+    margin: 2rem 0;
+    color: var(--sl-color-text);
+  }
+  
+  .hero h2 {
+    font-size: 3rem;
+    margin: 0 0 1rem;
+    color: var(--sl-color-white);
+  }
+  
+  .tagline {
+    font-size: 1.5rem;
+    margin-bottom: 2rem;
+    color: var(--sl-color-gray-1);
+  }
+
+  /* 移动端关键样式 */
+  @media (max-width: 768px) {
+    .content-title {
+      font-size: 1.5rem;
+      margin: 1.5rem 0;
+    }
+    
+    .hero h2 {
+      font-size: 2rem;
+    }
+    
+    .tagline {
+      font-size: 1.2rem;
+    }
+  }
+
+  /* 卡片网格关键样式 */
+  .custom-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    margin-top: 2rem;
+  }
+
+  .grid-item {
+    border-radius: 0.5rem;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    background-color: var(--sl-color-bg);
+  }
+
+  .thumbnail {
+    height: 180px;
+    width: 100%;
+    overflow: hidden;
+  }
+
+  .thumbnail img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .content {
+    padding: 1rem;
+  }
+
+  .title {
+    font-size: 1.1rem;
+    margin: 0;
+    color: var(--sl-color-text);
+  }
+
+  .excerpt {
+    font-size: 0.9rem;
+    color: var(--sl-color-text-accent);
+    margin: 0.5rem 0;
+  }
+
+  /* 移动端卡片网格样式 */
+  @media (max-width: 768px) {
+    .custom-grid {
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+
+    .thumbnail {
+      height: 160px;
+    }
+
+    .content {
+      padding: 0.75rem;
+    }
+
+    .title {
+      font-size: 1rem;
+    }
+
+    .excerpt {
+      font-size: 0.85rem;
+    }
+  }
+</style>
+
+<style>
+  /* 非关键 CSS - 异步加载 */
+  .home-page {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+  }
+  
+  .hero {
+    background-color: var(--sl-color-bg-accent);
+    padding: 4rem 0;
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+  
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
+  }
+  
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: center;
+  }
+  
+  .action {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1.25rem;
+    border-radius: 999px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.2s ease;
+  }
+  
+  .primary {
+    background-color: var(--sl-color-text-accent);
+    color: var(--sl-color-bg);
+  }
+  
+  .primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .secondary {
+    background-color: transparent;
+    border: 1px solid var(--sl-color-gray-5);
+    color: var(--sl-color-text);
+  }
+  
+  .secondary:hover {
+    background-color: var(--sl-color-gray-6);
+  }
+  
+  .card-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    color: var(--sl-color-gray-3);
+    margin-top: 0.5rem;
+  }
+  
+  .card-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  
+  .tag {
+    color: var(--sl-color-text-accent);
+    font-size: 0.85rem;
+  }
+  
+  .read-more {
+    margin-top: 1rem;
+  }
+  
+  .read-more a {
+    color: var(--sl-color-text-accent);
+    text-decoration: none;
+    font-weight: 500;
+  }
+  
+  .read-more a:hover {
+    text-decoration: underline;
+  }
+  
+  .see-all {
+    text-align: center;
+    margin: 2rem 0;
+  }
+  
+  .action-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background-color: var(--sl-color-accent-low);
+    color: var(--sl-color-accent);
+    padding: 0.5rem 1.25rem;
+    border-radius: 999px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.2s ease;
+  }
+  
+  .action-button:hover {
+    background-color: var(--sl-color-accent);
+    color: var(--sl-color-white);
+    transform: translateY(-2px);
+  }
+
+  /* 移动端非关键样式 */
+  @media (max-width: 768px) {
+    .hero {
+      padding: 2rem 0;
+    }
+    
+    .container {
+      padding: 0 0.5rem;
+    }
+    
+    .actions {
+      gap: 0.5rem;
+    }
+    
+    .action {
+      padding: 0.4rem 1rem;
+    }
+    
+    .card-meta {
+      font-size: 0.8rem;
+    }
+    
+    .tag {
+      font-size: 0.75rem;
+    }
+  }
+</style>
+
+<script>
+  function loadNonCriticalCSS() {
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = '/_astro/Page.css';
+    link.media = 'print';
+    link.onload = function() {
+      link.media = 'all';
+    };
+    document.head.appendChild(link);
+  }
+
+  // 异步加载非关键 CSS
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', loadNonCriticalCSS);
+  } else {
+    loadNonCriticalCSS();
+  }
+</script> 

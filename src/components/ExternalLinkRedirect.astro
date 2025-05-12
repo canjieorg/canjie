@@ -1,0 +1,189 @@
+---
+// 外链跳转组件
+---
+
+<div class="link-redirect">
+  <div class="redirect-container">
+    <div class="icon-wrapper">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="warning-icon">
+        <circle cx="12" cy="12" r="10"></circle>
+        <line x1="12" y1="8" x2="12" y2="12"></line>
+        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+      </svg>
+    </div>
+    <h1>您即将离开本站</h1>
+    <p id="target-domain">正在加载目标网站信息...</p>
+    <p class="warning">本站不对外部网站的内容负责，请注意保护您的个人信息安全！</p>
+    <div class="button-group">
+      <a href="#" id="confirm-redirect" class="confirm"><span>确认继续</span></a>
+      <a href="javascript:void(0)" id="cancel-redirect" class="cancel"><span>返回上一页</span></a>
+    </div>
+  </div>
+</div>
+
+<style>
+  /* 外链页面的样式 */
+  .link-redirect {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 60vh;
+    width: 100%;
+    padding: 2rem;
+  }
+
+  .redirect-container {
+    background-color: var(--sl-color-bg);
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    padding: 2rem;
+    max-width: 600px;
+    width: 100%;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .icon-wrapper {
+    background-color: var(--sl-color-accent-low);
+    border-radius: 50%;
+    width: 80px;
+    height: 80px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 1.5rem;
+  }
+  
+  .warning-icon {
+    width: 40px;
+    height: 40px;
+    color: var(--sl-color-accent);
+  }
+
+  h1 {
+    margin-bottom: 1rem;
+    font-size: 1.75rem;
+    color: var(--sl-color-text);
+  }
+  
+  p {
+    margin-bottom: 1rem;
+    color: var(--sl-color-text);
+  }
+
+  #target-domain {
+    font-weight: bold;
+    font-size: 1.25rem;
+    margin-bottom: 1.5rem;
+    color: var(--sl-color-accent);
+    word-break: break-all;
+  }
+  
+  .warning {
+    margin-bottom: 2rem;
+    color: var(--sl-color-text-accent);
+    width: 100%;
+    font-size: 0.9rem;
+  }
+
+  .button-group {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+    width: 100%;
+  }
+
+  .button-group a {
+    flex: 1;
+    height: 44px;
+    padding: 0.75rem 1.5rem;
+    border-radius: 99px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    white-space: nowrap;
+    box-sizing: border-box;
+    text-decoration: none;
+  }
+
+  .confirm {
+    background-color: var(--sl-color-accent);
+    color: white;
+  }
+
+  .confirm:hover {
+    background-color: var(--sl-color-accent-high);
+    transform: translateY(-2px);
+  }
+
+  .cancel {
+    background-color: var(--sl-color-gray-5);
+    color: var(--sl-color-text);
+  }
+
+  .cancel:hover {
+    background-color: var(--sl-color-gray-4);
+    transform: translateY(-2px);
+  }
+  
+  @media (max-width: 480px) {
+    .button-group {
+      flex-direction: column;
+    }
+    
+    .button-group a {
+      width: 100%;
+    }
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // 从URL获取目标链接
+    const urlParams = new URLSearchParams(window.location.search);
+    const encodedUrl = urlParams.get('url');
+    
+    if (!encodedUrl) {
+      window.location.href = '/';
+      return;
+    }
+
+    // 显示目标域名
+    const targetDomainElement = document.getElementById('target-domain');
+    try {
+      // 解码base64 URL
+      const decodedUrl = atob(encodedUrl);
+      const url = new URL(decodedUrl);
+      targetDomainElement.textContent = '即将前往: ' + url.hostname;
+    } catch (e) {
+      targetDomainElement.textContent = '链接格式无效';
+      return;
+    }
+    
+    // 设置按钮行为
+    const confirmButton = document.getElementById('confirm-redirect');
+    confirmButton.addEventListener('click', function(e) {
+      e.preventDefault();
+      try {
+        // 解码base64 URL并跳转
+        const decodedUrl = atob(encodedUrl);
+        window.location.href = decodedUrl;
+      } catch (e) {
+        window.history.back();
+      }
+    });
+    
+    const cancelButton = document.getElementById('cancel-redirect');
+    cancelButton.addEventListener('click', function(e) {
+      e.preventDefault();
+      window.history.back();
+    });
+  });
+</script> 

@@ -1,0 +1,166 @@
+---
+// src/components/MarkdownContent.astro
+// 这个组件结合了starlight-blog和starlight-image-zoom的功能
+import StarlightBlog from 'starlight-blog/overrides/MarkdownContent.astro';
+import StarlightImageZoom from 'starlight-image-zoom/components/ImageZoom.astro';
+import Comments from 'starlight-giscus/components/Comments.astro';
+
+// 检查当前页面是否启用了评论
+const { entry } = Astro.props;
+const enableComments = entry?.data?.giscus !== false;
+---
+
+<StarlightImageZoom />
+<StarlightBlog>
+  <slot />
+  {enableComments && <div id="giscus-container"><Comments /></div>}
+</StarlightBlog>
+
+<script>
+  // 等待 Giscus iframe 加载
+  function waitForGiscus() {
+    return new Promise((resolve) => {
+      // 如果已经存在 iframe，直接返回
+      const existingFrame = document.querySelector('iframe.giscus-frame');
+      if (existingFrame) {
+        resolve(existingFrame);
+        return;
+      }
+
+      // 监听 Giscus 的加载事件
+      const giscusListener = (event) => {
+        if (event.origin !== 'https://giscus.app') return;
+        if (!(typeof event.data === 'object' && event.data.giscus)) return;
+
+        // 处理各种 Giscus 状态
+        if (event.data.giscus.loadingState === 'ready') {
+          window.removeEventListener('message', giscusListener);
+          const frame = document.querySelector('iframe.giscus-frame');
+          if (frame) {
+            resolve(frame);
+          }
+        } else if (event.data.giscus.loadingState === 'error') {
+          window.removeEventListener('message', giscusListener);
+          resolve(null);
+        }
+      };
+
+      // 添加事件监听器
+      window.addEventListener('message', giscusListener);
+
+      // 设置超时检查
+      let attempts = 0;
+      const maxAttempts = 10;
+      const checkInterval = setInterval(() => {
+        const frame = document.querySelector('iframe.giscus-frame');
+        if (frame) {
+          clearInterval(checkInterval);
+          resolve(frame);
+        } else if (++attempts >= maxAttempts) {
+          clearInterval(checkInterval);
+          resolve(null);
+        }
+      }, 1000);
+    });
+  }
+
+  // 设置主题观察器
+  function setupThemeObserver(giscusFrame) {
+    if (!giscusFrame) {
+      return;
+    }
+
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (mutation.attributeName === 'data-theme') {
+          const theme = document.documentElement.getAttribute('data-theme');          
+          try {
+            giscusFrame.contentWindow.postMessage({
+              giscus: {
+                setConfig: {
+                  theme: theme === 'dark' ? 'dark_dimmed' : 'light'
+                }
+              }
+            }, 'https://giscus.app');
+          } catch (error) {
+            console.error('[主题切换] 发送消息失败:', error);
+          }
+        }
+      });
+    });
+
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['data-theme']
+    });
+  }
+
+  // 主函数
+  async function init() {
+    try {
+      // 使用 Intersection Observer 监听评论区域
+      const giscusContainer = document.getElementById('giscus-container');
+      if (!giscusContainer) {
+        return;
+      }
+
+      const observer = new IntersectionObserver(async (entries) => {
+        const entry = entries[0];
+        if (entry.isIntersecting) {
+          observer.disconnect(); // 停止观察
+
+          // 等待 Giscus iframe 加载
+          const frame = await waitForGiscus();
+          
+          // 设置主题观察器
+          if (frame) {
+            setupThemeObserver(frame);
+          }
+
+          // 处理外链
+          if (typeof window.handleExternalLinks === 'function') {
+            window.handleExternalLinks();
+          }
+        }
+      }, {
+        rootMargin: '100px' // 提前 100px 开始加载
+      });
+
+      observer.observe(giscusContainer);
+    } catch (error) {
+      console.error('[初始化错误]', error);
+    }
+  }
+
+  // 确保在 DOM 完全加载后再执行
+  function waitForDOM() {
+    return new Promise((resolve) => {
+      if (document.readyState === 'complete') {
+        resolve();
+      } else {
+        window.addEventListener('load', resolve);
+      }
+    });
+  }
+
+  // 初始化
+  waitForDOM().then(() => {
+    setTimeout(init, 100); // 添加小延迟确保 DOM 完全准备好
+  });
+</script>
+
+<style>
+  /* 隐藏 Giscus 加载错误消息 */
+  .giscus-frame {
+    min-height: 200px;
+  }
+  
+  /* 当 Giscus 加载失败时显示友好的提示 */
+  .giscus-frame:not([src])::after {
+    content: '评论区加载中...';
+    display: block;
+    text-align: center;
+    padding: 2rem;
+    color: var(--sl-color-text-accent);
+  }
+</style> 

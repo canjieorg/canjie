@@ -1,0 +1,262 @@
+---
+// 从 props 获取分类
+const { category } = Astro.props;
+
+// 从 starlightBlog 获取文章数据
+const starlightBlog = Astro.locals?.starlightBlog;
+
+// 定义类型
+interface BlogPost {
+  entry: {
+    id: string;
+    data: {
+      category?: string;
+      title?: string;
+      tags?: string | string[];
+    };
+  };
+  href: string;
+  createdAt: string;
+}
+
+interface GroupedPosts {
+  [year: string]: {
+    [month: string]: BlogPost[];
+  };
+}
+
+interface PostsByCategory {
+  [category: string]: GroupedPosts;
+}
+
+// 获取所有文章并按分类组织
+const postsByCategory: PostsByCategory = {};
+
+if (starlightBlog?.posts) {
+  starlightBlog.posts.forEach((post: BlogPost) => {
+    // 从文章路径中提取分类
+    const pathParts = post.entry.id.split('/');
+    const blogIndex = pathParts.indexOf('blog');
+    let postCategory = '未分类';
+    
+    // 如果文章在 blog 目录下，且后面还有目录
+    if (blogIndex !== -1 && pathParts.length > blogIndex + 1) {
+      // 获取 blog 目录后的第一个目录名作为分类
+      postCategory = pathParts[blogIndex + 1];
+    }
+    
+    // 如果文章在 frontmatter 中指定了分类，优先使用它
+    if (post.entry?.data?.category) {
+      postCategory = post.entry.data.category;
+    }
+    
+    if (!postsByCategory[postCategory]) {
+      postsByCategory[postCategory] = {};
+    }
+
+    // 按日期排序并分组
+    const date = new Date(post.createdAt);
+    const year = date.getFullYear().toString();
+    const month = (date.getMonth() + 1).toString();
+    
+    if (!postsByCategory[postCategory][year]) {
+      postsByCategory[postCategory][year] = {};
+    }
+    if (!postsByCategory[postCategory][year][month]) {
+      postsByCategory[postCategory][year][month] = [];
+    }
+    
+    postsByCategory[postCategory][year][month].push(post);
+  });
+}
+
+// 对每个分类的文章按日期排序
+Object.keys(postsByCategory).forEach(category => {
+  Object.keys(postsByCategory[category]).forEach(year => {
+    Object.keys(postsByCategory[category][year]).forEach(month => {
+      postsByCategory[category][year][month].sort((a, b) => 
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      );
+    });
+  });
+});
+
+// 如果指定了特定分类，只显示该分类的文章
+const categoriesToShow = category ? { [category]: postsByCategory[category] || {} } : postsByCategory;
+
+// 月份名称映射
+const monthNames = {
+  1: '1月', 2: '2月', 3: '3月', 4: '4月', 5: '5月', 6: '6月',
+  7: '7月', 8: '8月', 9: '9月', 10: '10月', 11: '11月', 12: '12月'
+};
+---
+
+<div class="categories-container">
+  {Object.entries(categoriesToShow).map(([cat, years]) => (
+    <div class="category-section">
+      <h2 class="category-title">{cat}</h2>
+      {Object.entries(years).sort(([yearA], [yearB]) => Number(yearB) - Number(yearA)).map(([year, months]) => {
+        const totalPosts = Object.values(months).reduce((sum, monthPosts) => sum + monthPosts.length, 0);
+        return (
+          <div class="year-section">
+            <h3 class="year-title">{year}年 ({totalPosts}篇文章)</h3>
+            {Object.entries(months).sort(([monthA], [monthB]) => Number(monthB) - Number(monthA)).map(([month, posts]) => (
+              <div class="month-section">
+                <h4 class="month-title">{monthNames[Number(month)]}</h4>
+                <div class="posts-list">
+                  {posts.map(post => (
+                    <div class="post-item">
+                      <div class="post-content">
+                        <a href={post.href} class="post-link">
+                          <span class="post-date">{String(month).padStart(2, '0')}-{String(new Date(post.createdAt).getDate()).padStart(2, '0')}</span>
+                          <span class="post-title">{post.entry?.data?.title}</span>
+                        </a>
+                        {post.entry?.data?.tags && (
+                          <div class="post-tags">
+                            {Array.isArray(post.entry.data.tags) 
+                              ? post.entry.data.tags.map(tag => (
+                                  <a href={`/blog/tags/${tag.toLowerCase()}`} class="tag">#{tag}</a>
+                                ))
+                              : <a href={`/blog/tags/${post.entry.data.tags.toLowerCase()}`} class="tag">#{post.entry.data.tags}</a>
+                            }
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        );
+      })}
+    </div>
+  ))}
+</div>
+
+<style>
+  .categories-container {
+    max-width: var(--sl-content-width);
+    margin: 0 auto;
+    padding: 2rem 1rem;
+  }
+
+  .category-section {
+    margin-bottom: 3rem;
+  }
+
+  .category-title {
+    font-size: 1.5rem;
+    color: var(--sl-color-accent);
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--sl-color-accent-low);
+  }
+
+  .year-section {
+    margin-bottom: 2rem;
+  }
+
+  .year-title {
+    font-size: 1.25rem;
+    color: var(--sl-color-text);
+    margin-bottom: 1rem;
+  }
+
+  .month-section {
+    margin-bottom: 1.5rem;
+  }
+
+  .month-title {
+    font-size: 1.1rem;
+    color: var(--sl-color-text-accent);
+    margin-bottom: 0.75rem;
+  }
+
+  .posts-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .post-item {
+    background: var(--sl-color-bg);
+    border-radius: 0.5rem;
+    overflow: hidden;
+    transition: transform 0.2s;
+  }
+
+  .post-item:hover {
+    transform: translateX(5px);
+  }
+
+  .post-content {
+    padding: 0.75rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .post-link {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: var(--sl-color-text);
+    gap: 1rem;
+  }
+
+  .post-date {
+    font-family: monospace;
+    color: var(--sl-color-text-accent);
+    min-width: 60px;
+    flex-shrink: 0;
+  }
+
+  .post-title {
+    flex: 1;
+  }
+
+  .post-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-left: 4.5rem;
+  }
+
+  .tag {
+    font-size: 0.8rem;
+    color: var(--sl-color-text-accent);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .tag:hover {
+    color: var(--sl-color-accent);
+  }
+
+  @media (max-width: 768px) {
+    .category-title {
+      font-size: 1.25rem;
+    }
+    .year-title {
+      font-size: 1.1rem;
+    }
+    .month-title {
+      font-size: 1rem;
+    }
+    .post-content {
+      padding: 0.75rem;
+    }
+    .post-link {
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    .post-date {
+      min-width: 50px;
+    }
+    .post-tags {
+      margin-left: 0;
+      margin-top: 0.25rem;
+    }
+  }
+</style> 
