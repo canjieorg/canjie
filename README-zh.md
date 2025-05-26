@@ -166,7 +166,7 @@
    - Build command: `npm run build`
    - Publish directory: `dist`
 
-[Netlify 演示](https://netlify.canjie.org/)
+4. 示例链接：[Netlify 演示](https://netlify.canjie.org/)
 
 ---
 
@@ -178,7 +178,7 @@
    - Build Command: `npm run build`
    - Output Directory: `dist`
 
-[Vercel 演示](https://vercel.canjie.org/)
+4. 示例链接：[Vercel 演示](https://vercel.canjie.org/)
 
 
 ### 自部署
