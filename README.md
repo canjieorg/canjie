@@ -164,7 +164,7 @@ To make the system more powerful, user-friendly, and expressive, it integrates t
    * Build command: `npm run build`
    * Publish directory: `dist`
 
-[Netlify Demo](https://netlify.canjie.org/)
+4. Demo link: [Netlify Demo](https://netlify.canjie.org/)
 
 ---
 
@@ -176,7 +176,7 @@ To make the system more powerful, user-friendly, and expressive, it integrates t
    * Build Command: `npm run build`
    * Output Directory: `dist`
 
-[Vercel Demo](https://vercel.canjie.org/)
+4. Demo link: [Vercel Demo](https://vercel.canjie.org/)
 
 ---
 
