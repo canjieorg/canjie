@@ -151,8 +151,8 @@
 2. 登录 [Cloudflare Pages](https://dash.cloudflare.com/)，点击 **Import an existing Git repository**  
 3. Connect GitHub，选择刚刚 Fork 的项目  
 4. 设置构建参数：
-   - Build command：\`npm run build\`  
-   - Output directory：\`dist\`  
+   - Build command：`npm run build`  
+   - Output directory：`dist`  
 5. 点击 **Save and Deploy** 完成部署  
 6. 示例链接：[Cloudflare 演示](https://cloudflare.canjie.org/)  
 
