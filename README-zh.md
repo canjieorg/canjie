@@ -242,3 +242,13 @@ yarn dev
 ```bash
 yarn build
 ```
+
+## 项目设置
+项目部署完成以后，您需要进行以下2项设置，就可以开始愉快地撰写博客了
+- 修改系统参数 **必选项**
+
+关于将系统参数修改成与您相匹配的内容您可以 [**参考**](https://canjie.org/blog/tech/beginners-guide-to-blog-usage/)
+
+- 设置评论系统 **可选项**
+
+本博客系统已内置 **giscu** 评论组件,默认所有页面均关闭评论，如果您需要开启评论功能，您可以 [**参考**](https://canjie.org/blog/tech/blog-usage---set-up-a-comment-system/)，如果您不准备开启评论，可以忽略此项
