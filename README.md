@@ -241,3 +241,17 @@ Build static files:
 ```bash
 yarn build
 ```
+
+## Project Setup
+
+After the project has been deployed, you need to complete the following two steps before you can start enjoying writing your blog:
+
+- Modify System Parameters **(Required)**
+
+To customize the system parameters according to your preferences, you can refer to [**this guide**](https://canjie.org/en/blog/tech/beginners-guide-to-blog-usage/)
+
+- Set Up the Comment System **(Optional)**
+
+This blog system has a built-in **giscu** comment component. By default, comments are disabled on all pages.  
+If you want to enable the comment feature, you can refer to [**this guide**](https://canjie.org/en/blog/tech/blog-usage---set-up-a-comment-system/).  
+If you do not intend to enable comments, you can ignore this step.
